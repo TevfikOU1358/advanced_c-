@@ -1,0 +1,6 @@
+﻿  main.cpp
+C:\Users\90554\source\advanced_cpp\value_types_and_category\value_types_and_category\main.cpp(84,7): warning C5046: 'tef': İç bağlantılı türle ilgili sembol tanımlı değil
+C:\Users\90554\source\advanced_cpp\value_types_and_category\value_types_and_category\main.cpp(83,7): warning C5046: 'tef': İç bağlantılı türle ilgili sembol tanımlı değil
+C:\Users\90554\source\advanced_cpp\value_types_and_category\value_types_and_category\main.cpp(82,7): warning C5046: 'tef': İç bağlantılı türle ilgili sembol tanımlı değil
+C:\Users\90554\source\advanced_cpp\value_types_and_category\value_types_and_category\main.cpp(34): warning C4172: yerel değişkenin veya geçici : x öğesinin adresi döndürülüyor
+  value_types_and_category.vcxproj -> C:\Users\90554\source\advanced_cpp\value_types_and_category\x64\Debug\value_types_and_category.exe

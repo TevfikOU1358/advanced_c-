@@ -1,8 +1,7 @@
 # Tüm dosyaları ignore et
 *.vcxproj*
-*/.vs/
-*/x64/
-
+*.exe
+*.pdb
 
 
 

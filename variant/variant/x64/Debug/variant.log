@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\90554\source\advanced_cpp\variant\variant\main.cpp(104,5): error C2084: 'int main(void)' işlevinin bir gövdesi zaten var
+C:\Users\90554\source\advanced_cpp\variant\variant\main.cpp(17): message : önceki 'main' tanımına bakın

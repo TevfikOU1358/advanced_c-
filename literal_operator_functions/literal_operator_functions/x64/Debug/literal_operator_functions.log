@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\90554\source\advanced_cpp\literal_operator_functions\literal_operator_functions\main.cpp(12,9): warning C4244: 'return': 'unsigned __int64' - 'int' dönüşümü; veri kaybı olabilir
+  literal_operator_functions.vcxproj -> C:\Users\90554\source\advanced_cpp\literal_operator_functions\x64\Debug\literal_operator_functions.exe

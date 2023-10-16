@@ -1,0 +1,361 @@
+Move Semantics
+-----------------------------------------------------
+1)
+#include <iostream>
+
+class Nec {
+public:
+	Nec() = default;
+	Nec(const Nec&) = default;
+	Nec(Nec&&) = default;
+	Nec& operator=(const Nec&)
+	{
+		std::cout << "copy assignment\n";
+		return *this;
+	}
+
+	Nec& operator=(Nec&&)
+	{
+		std::cout << "move assignment\n";
+		return *this;
+	}
+};
+
+
+//const geri dönüş değeri türü taşıma semantiğini bloke ediyor
+const Nec foo()
+{
+	Nec x;
+
+	return x;
+}
+
+Nec bar()
+{
+	Nec x;
+
+	return x;
+}
+
+int main()
+{
+	Nec x;
+	//..
+
+	x = foo();  //copy assignment
+	x = bar();  //move assignment
+}
+----------------------------------------------------------------
+2)
+#include <iostream>
+
+class Myclass {
+public:
+	Myclass()
+	{
+		std::cout << "default ctor\n";
+	}
+
+	~Myclass()
+	{
+		std::cout << "destructor\n";
+	}
+
+	Myclass(int)
+	{
+		std::cout << "Myclass(int)\n";
+	}
+
+	Myclass(const Myclass&)
+	{
+		std::cout << "copy ctor\n";
+	}
+
+	Myclass(Myclass&&)
+	{
+		std::cout << "move ctor\n";
+	}
+
+	Myclass& operator=(const Myclass&)
+	{
+		std::cout << "copy assignment\n";
+		return *this;
+	}
+
+	Myclass& operator=(Myclass&&)
+	{
+		std::cout << "move assignment\n";
+		return *this;
+	}
+};
+
+
+
+int main()
+{
+	Myclass m1{ 47 }; //Myclass(int);
+	auto m2{ m1 }; //copy ctor
+	auto m3{ std::move(m1) }; //move ctor
+	auto m4{ static_cast<Myclass&&>(m3) }; //move ctor
+	m3 = m4; //copy assignment
+	m3 = std::move(m4); //move assignment
+}
+Myclass(int)
+copy ctor
+move ctor
+move ctor
+copy assignment
+move assignment
+destructor
+destructor
+destructor
+----------------------------------------------------------
+3)
+#include <iostream>
+
+class Myclass {
+public:
+	Myclass()
+	{
+		std::cout << "default ctor\n";
+	}
+
+	~Myclass()
+	{
+		std::cout << "destructor\n";
+	}
+
+	Myclass(int)
+	{
+		std::cout << "Myclass(int)\n";
+	}
+
+	Myclass(const Myclass&)
+	{
+		std::cout << "copy ctor\n";
+	}
+
+	Myclass(Myclass&&)
+	{
+		std::cout << "move ctor\n";
+	}
+
+	Myclass& operator=(const Myclass&)
+	{
+		std::cout << "copy assignment\n";
+		return *this;
+	}
+
+	Myclass& operator=(Myclass&&)
+	{
+		std::cout << "move assignment\n";
+		return *this;
+	}
+};
+
+Myclass func(Myclass m)
+{
+	//code
+	return m;
+}
+
+int main()
+{
+	auto m2 = func(13); //mandatory copy elision + move constructor(Myclass(int) + move ctor)
+}
+-----------------------------------------------------------
+#include <iostream>
+
+struct A {
+	A() 
+	{
+		std::cout << "default ctor\n";
+	}
+
+	A(const A&)
+	{
+		std::cout << "copy ctor\n";
+	}
+
+	A(A &&)
+	{
+		std::cout << "move  ctor\n";
+	}
+};
+
+A func() 
+{ 
+	A ax;
+
+	return std::move(ax); //bunu yapmayın
+}
+
+A foo()
+{
+	return std::move(A{}); //bunu yapmayın
+}
+
+A create()
+{
+	A ax;
+
+	//
+	return ax;
+}
+
+int main()
+{
+	//A x{ foo() };
+	//A y{ func() };
+	//A z{ std::move(create())}; //bunu yapmayin
+}
+-----------------------------------------------------------
+#include <iostream>
+
+
+class MoveOnly {
+public:
+	MoveOnly(int)
+	{
+		std::cout << "MoveOnly(int)\n";
+	}
+	MoveOnly(const MoveOnly&) = delete;
+	MoveOnly& operator=(const MoveOnly&) = delete;
+	MoveOnly(MoveOnly&&)
+	{
+		std::cout << "move ctor\n";
+	}
+
+	MoveOnly& operator=(MoveOnly&&)
+	{
+		std::cout << "move assignment\n";
+		return *this;
+	}
+};
+
+
+
+MoveOnly foo(int ival)
+{
+	MoveOnly m{ ival};
+
+	return m; //copy elisison or move ctor
+}
+
+int main()
+{
+	auto m = foo(12);
+}
+
+-------------------------------------------------
+noexcept:#include <utility>
+
+#include <iostream>
+
+struct A {
+	A() = default;
+
+	A(A&&)
+	{
+		std::cout << "move ctor\n";
+	}
+
+	A(const A&)
+	{
+		std::cout << "copy ctor\n";
+	}
+};
+
+
+int main()
+{
+	A ax;
+
+	A bx(std::move_if_noexcept(ax));  //move ctor
+}
+-----------------------------------------------------
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Student {
+public:
+	Student(const char* name) : name_{name} {}
+	std::string getName() const 
+	{
+		return name_;
+	}
+		
+	Student(const Student& other) : name_{ other.name_ } 
+	{
+		std::cout << "COPY " << name_ << '\n';
+	}
+
+	Student(Student&& other) : name_{ std::move(other.name_) } 
+	{
+		std::cout << "MOVE " << name_ << '\n';
+	}
+private:
+	std::string name_;
+};
+
+int main()
+{
+	std::vector<Student> vec{ 
+		"Omer Faruk Yesiltepe",
+		"Seyfullah Karamehmetoglu",
+		"Muzaffer Karabasan" };
+
+	std::cout << "capacity: " << vec.capacity() << '\n';
+	vec.push_back("Aysenur Nazligul Aybakan");//eğer move ctor noexcept olsa idi push_back işlemi bütün öğeleri taşıyacaktı.
+}
+
+COPY Omer Faruk Yesiltepe
+COPY Seyfullah Karamehmetoglu
+COPY Muzaffer Karabasan
+capacity: 3
+MOVE Aysenur Nazligul Aybakan
+COPY Omer Faruk Yesiltepe
+COPY Seyfullah Karamehmetoglu
+COPY Muzaffer Karabasan
+
+-------------------------------------------
+// Asagidaki ornekte capasite arttrma isleminde  kopyalama veya taşıma işleminin noexcept'e bağlı olarak farkı incelenmektedir.
+//move ctor noexcept olursa move ctor çağırılır ve işlem süresi 100 katı oranında azalır.
+//default olarak move ctor noexcept tir.
+
+#include <iostream>
+#include <chrono>
+#include <vector>
+#include <string>
+
+class Mystr{
+public:
+    Mystr() : m_str(500, 't'){}
+    Mystr(const Mystr&) = default;
+    Mystr(Mystr &&other)noexcept : m_str{std::move(other.m_str)}{}
+    
+private:
+    std::string m_str;
+    
+};
+int main() {
+    
+    // Start measuring time
+    std::vector<Mystr> vec(1'000'000);
+    
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    // Your code to measure elapsed time for goes here
+    vec.reserve(vec.capacity() + 1);
+    // Stop measuring time
+    auto end_time = std::chrono::high_resolution_clock::now();
+
+    // Calculate the elapsed time
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+    // Print the elapsed time in microseconds
+    std::cout << "Elapsed time: " << duration.count() << " milliseconds" << std::endl;
+
+    return 0;
+}

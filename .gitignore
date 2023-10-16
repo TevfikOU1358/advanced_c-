@@ -1,0 +1,8 @@
+# Tüm dosyaları ignore et
+*.vcxproj*
+/.vs/
+/x64/
+
+
+
+

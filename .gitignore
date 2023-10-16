@@ -1,5 +1,5 @@
-*.sln
-*.vcxproj*
+# Tüm dosyaları ignore et
+*
 
-/.vs/
-/x64/
+# Sadece .cpp dosyalarını dahil et
+!*.cpp

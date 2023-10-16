@@ -1,5 +1,6 @@
 # Tüm dosyaları ignore et
 *
 
-# Sadece .cpp dosyalarını dahil et
+# Sadece .cpp dosyalarını dahil et 
 !*.cpp
+
